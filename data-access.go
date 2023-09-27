@@ -26,15 +26,15 @@ func getPageByTitle(title string) (Page, error) {
 	return body, nil
 }
 
-func saveBodyForTitle(title string, body string) (int64, error) {
-	if _, err := getPageByTitle(title); err == sql.ErrNoRows {
-		return insertBodyForTitle(title, body)
+func (p *Page) save() (int64, error) {
+	if _, err := getPageByTitle(p.Title); err == sql.ErrNoRows {
+		return p.insert()
 	}
-	return updateBodyForTitle(title, body)
+	return p.update()
 }
 
-func insertBodyForTitle(title string, body string) (int64, error) {
-	result, err := db.Exec("INSERT INTO entries (title, body) VALUES (?,?)", title, body)
+func (p *Page) insert() (int64, error) {
+	result, err := db.Exec("INSERT INTO entries (title, body) VALUES (?,?)", p.Title, p.Body)
 	if err != nil {
 		return 0, fmt.Errorf("addAlbum: %v", err)
 	}
@@ -45,8 +45,8 @@ func insertBodyForTitle(title string, body string) (int64, error) {
 	return id, nil
 }
 
-func updateBodyForTitle(title string, body string) (int64, error) {
-	result, err := db.Exec("UPDATE entries SET body = ? WHERE title = ?", body, title)
+func (p *Page) update() (int64, error) {
+	result, err := db.Exec("UPDATE entries SET body = ? WHERE title = ?", p.Body, p.Title)
 	if err != nil {
 		return 0, fmt.Errorf("addAlbum: %v", err)
 	}

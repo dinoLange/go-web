@@ -53,7 +53,8 @@ func editHandler(w http.ResponseWriter, r *http.Request, title string) {
 
 func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	body := r.FormValue("body")
-	_, err := saveBodyForTitle(title, body)
+	p := &Page{Title: title, Body: string(body)}
+	_, err := p.save()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
